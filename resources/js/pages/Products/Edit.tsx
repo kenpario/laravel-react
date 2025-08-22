@@ -8,33 +8,38 @@ import { Head, useForm } from '@inertiajs/react'
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from 'lucide-react'
 
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    title: 'Add new product',
-    href: '/products/create',
-  },
-];
+interface Product{
+    id: number,
+    name: string,
+    price: number,
+    description: string,
+}
 
-export default function Create() {
-  const { data, setData, post, processing, errors } = useForm({
-    name: '',
-    price: '',
-    description: '',
+interface Props {
+    product: Product
+}
+
+export default function Edit({product} : Props) {
+  const { data, setData, put, processing, errors } = useForm({
+    name: product.name,
+    price: product.price,
+    description: product.description,
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    post(route('products.store'))
+  const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    put(route('products.update',product.id))
+   
   }
 
   return (
-    <AppLayout breadcrumbs={breadcrumbs}>
-      <Head title="Add new product" />
+    <AppLayout breadcrumbs={[{title: 'Edit a product', href: `products/${product.id}/edit`}]}>
+      <Head title="Update product" />
 
       <div className="flex justify-center">
         <div className="w-full max-w-lg p-6">
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleUpdate}
             className="space-y-6 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-md"
           >
             {Object.keys(errors).length > 0 && (
@@ -82,8 +87,8 @@ export default function Create() {
             </div>
 
             <div className="flex justify-end">
-              <Button disabled='processing' type="submit" disabled={processing} className="w-full sm:w-auto">
-                {processing ? "Adding..." : "Add"}
+              <Button type="submit" disabled={processing} className="w-full sm:w-auto">
+                {processing ? "Updating..." : "Update"}
               </Button>
             </div>
           </form>
